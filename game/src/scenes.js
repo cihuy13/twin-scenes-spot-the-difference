@@ -131,6 +131,16 @@ function drawKiteField(ctx, changed) {
   if (!changed.has('bird-gone')) bird(ctx, 210, 100, '#5a4632');
   bird(ctx, 330, 130, '#5a4632');
 
+  // Butterflies, the same on both panels: small life that makes the field
+  // worth a second look without hiding any difference.
+  for (const [bx, by, wing] of [[250, 225, '#ff7b9c'], [525, 235, '#b388ff']]) {
+    ctx.fillStyle = wing;
+    circle(ctx, bx - 6, by, 6); ctx.fill();
+    circle(ctx, bx + 6, by, 6); ctx.fill();
+    ctx.fillStyle = '#5a4632';
+    ctx.fillRect(bx - 1, by - 5, 2, 10);
+  }
+
   // Rolling hills and grass.
   ctx.fillStyle = '#8fce6e';
   ctx.beginPath(); ctx.ellipse(140, 470, 260, 150, 0, Math.PI, Math.PI * 2); ctx.fill();

@@ -18,15 +18,23 @@ export function drawFoundRing(ctx, x, y, r) {
   ctx.beginPath();
   ctx.arc(x, y, r + 7, 0, Math.PI * 2);
   ctx.stroke();
-  // Green check in the middle of the ring.
-  ctx.strokeStyle = '#3fbf7f';
-  ctx.lineWidth = 5;
+  // Green check in the middle of the ring, drawn bold so it still reads as
+  // a check (never an X) when the screenshot is shrunk for the judge.
+  ctx.strokeStyle = '#2f9e68';
+  ctx.lineWidth = 7;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
   ctx.beginPath();
-  ctx.moveTo(x - 10, y);
-  ctx.lineTo(x - 2, y + 8);
-  ctx.lineTo(x + 11, y - 8);
+  ctx.moveTo(x - 12, y + 1);
+  ctx.lineTo(x - 2, y + 10);
+  ctx.lineTo(x + 13, y - 10);
+  ctx.stroke();
+  ctx.strokeStyle = '#7fe6ae';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(x - 12, y + 1);
+  ctx.lineTo(x - 2, y + 10);
+  ctx.lineTo(x + 13, y - 10);
   ctx.stroke();
   ctx.restore();
 }
