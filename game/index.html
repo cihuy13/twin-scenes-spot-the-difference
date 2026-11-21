@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Twin Scenes — Spot the Difference</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #141a26; color: #f4f1e6;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  body { min-height: 100vh; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 10px 16px 14px; }
+  header.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .title h1 { margin: 0; font-size: 28px; letter-spacing: 0.2px; }
+  .title h1 span { color: #f2c94c; }
+  .title p { margin: 2px 0 0; color: #9aa5bd; font-size: 14px; }
+  #toFind { font-size: 32px; font-weight: 800; color: #f2c94c; white-space: nowrap; }
+  .pills { display: flex; gap: 8px; align-items: center; }
+  .pill { background: #1d2536; border: 1px solid #33405c; border-radius: 999px;
+    padding: 8px 14px; font-size: 15px; font-weight: 700; white-space: nowrap; }
+  .pill.hot { background: #1f7a4d; border-color: #3fbf7f; }
+  #timerBarWrap { height: 8px; background: #1d2536; border-radius: 999px; margin: 10px 0 8px; overflow: hidden; }
+  #timerBar { height: 100%; width: 100%; background: #3fbf7f; border-radius: 999px; }
+  #timerBar.low { background: #e5534b; }
+  .controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .controls .spacer { flex: 1; }
+  .scene-btn, .btn { font: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+    background: #1d2536; color: #f4f1e6; border: 1px solid #33405c; border-radius: 999px;
+    padding: 8px 14px; }
+  .scene-btn.active { background: #f2c94c; color: #231a04; border-color: #f2c94c; }
+  .btn { background: #f2c94c; color: #231a04; border-color: #f2c94c; }
+  .btn:disabled { opacity: 0.45; cursor: default; }
+  .btn.ghost { background: #1d2536; color: #f4f1e6; border-color: #33405c; }
+  #sceneIndex { color: #9aa5bd; font-size: 13px; }
+  .panels { display: flex; gap: 16px; margin-top: 10px; }
+  figure { margin: 0; flex: 1; min-width: 0; }
+  figure .tag { text-align: center; font-size: 12px; font-weight: 800; letter-spacing: 1px;
+    color: #9aa5bd; text-transform: uppercase; margin-bottom: 6px; }
+  figure canvas { display: block; width: 100%; height: auto; border-radius: 12px;
+    border: 2px solid #33405c; background: #1d2536; cursor: crosshair; touch-action: manipulation; }
+  figure figcaption { text-align: center; color: #9aa5bd; font-size: 13px; margin-top: 6px; }
+  .found-row { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+  #dots { display: flex; gap: 6px; }
+  .dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #33405c;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; color: #fff; background: #1d2536; }
+  .dot.found { background: #3fbf7f; border-color: #3fbf7f; }
+  #foundList { color: #9aa5bd; font-size: 14px; }
+  footer.help { margin-top: 10px; color: #9aa5bd; font-size: 13px; text-align: center; }
+  footer.help b { color: #f4f1e6; }
+  #overlay { position: fixed; inset: 0; background: rgba(10, 13, 20, 0.72);
+    display: flex; align-items: center; justify-content: center; z-index: 10; }
+  #overlay.hidden { display: none; }
+  #overlay .card { background: #1d2536; border: 1px solid #33405c; border-radius: 16px;
+    padding: 28px 36px; text-align: center; max-width: 480px; }
+  #overlay h2 { margin: 0 0 8px; font-size: 30px; }
+  #overlay p { margin: 0 0 18px; color: #9aa5bd; font-size: 15px; line-height: 1.5; }
+  #overlayBtn { font-size: 16px; padding: 12px 26px; }
+  #status { position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip-path: inset(50%); white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="title">
+      <h1>Twin <span>Scenes</span></h1>
+      <p>Spot the difference · 3 scenes · 21 differences</p>
+    </div>
+    <div id="toFind">7 to find</div>
+    <div class="pills">
+      <span class="pill" id="timer">3:00</span>
+      <span class="pill" id="score">Score 0</span>
+      <span class="pill" id="streak">Streak ×1</span>
+    </div>
+  </header>
+  <div id="timerBarWrap"><div id="timerBar"></div></div>
+  <div class="controls">
+    <button class="scene-btn active" data-scene="0">1 · Kite Field</button>
+    <button class="scene-btn" data-scene="1">2 · Bookshop Lane</button>
+    <button class="scene-btn" data-scene="2">3 · Starlight Camp</button>
+    <span id="sceneIndex">Scene 1 of 3 · Par 3:00</span>
+    <span class="spacer"></span>
+    <button class="btn" id="hintBtn">Hint (3)</button>
+    <button class="btn ghost" id="pauseBtn">Pause</button>
+    <button class="btn ghost" id="restartBtn">Restart</button>
+  </div>
+  <div class="panels">
+    <figure>
+      <div class="tag">Left — original</div>
+      <canvas id="leftCanvas" aria-label="Original picture"></canvas>
+      <figcaption>Original</figcaption>
+    </figure>
+    <figure>
+      <div class="tag">Right — spot the changes</div>
+      <canvas id="rightCanvas" aria-label="Changed picture"></canvas>
+      <figcaption>Changed — click a difference on either picture</figcaption>
+    </figure>
+  </div>
+  <div class="found-row">
+    <div id="dots" aria-label="Differences found"></div>
+    <div id="foundList">Nothing found yet — look close, the differences are fair but shy.</div>
+  </div>
+  <footer class="help">
+    Mouse: click to guess &nbsp;·&nbsp; Keys: <b>H</b> hint, <b>R</b> restart, <b>N</b> next, <b>P</b> pause, <b>1–3</b> scenes
+    &nbsp;·&nbsp; Wrong clicks cost 5 seconds &nbsp;·&nbsp; <span id="sceneName">Kite Field at Dawn</span>
+  </footer>
+</div>
+<div id="overlay" class="hidden">
+  <div class="card">
+    <h2 id="overlayTitle"></h2>
+    <p id="overlayText"></p>
+    <button class="btn" id="overlayBtn"></button>
+  </div>
+</div>
+<p id="status" role="status" aria-live="polite"></p>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
